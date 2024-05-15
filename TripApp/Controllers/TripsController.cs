@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 using TripApp.Context;
 using TripApp.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TripApp.Controllers
 {
@@ -45,8 +43,8 @@ namespace TripApp.Controllers
             return Ok(result);
         }
 
-/*        [HttpPost("{idTrip}/clients")]
-        public async Task<ActionResult> AddClientToTrip(int idTrip, ClientDTO clientDTO)
+        [HttpPost("{idTrip}/clients")]
+        public async Task<ActionResult> AddClientToTrip(int idTrip, AddClientToTripDTO addClientToTripDTO)
         {
             var trip = await _context.Trips.FindAsync(idTrip);
             if (trip == null)
@@ -54,34 +52,38 @@ namespace TripApp.Controllers
                 return NotFound("Trip not found.");
             }
 
-            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == clientDTO.Pesel);
+            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == addClientToTripDTO.Pesel);
             if (existingClient == null)
             {
                 existingClient = new Client
                 {
-                    Name = clientDTO.Name,
-                    Pesel = clientDTO.Pesel
+                    FirstName = addClientToTripDTO.FirstName,
+                    Pesel = addClientToTripDTO.Pesel
+                    //...
                 };
                 _context.Clients.Add(existingClient);
             }
 
-            if (trip.ClientTrips.Any(ct => ct.ClientId == existingClient.Id))
+
+            if (trip.ClientTrips.Any(ct => ct.IdClient == existingClient.IdClient))
             {
                 return BadRequest("Client is already assigned to this trip.");
             }
 
             var clientTrip = new ClientTrip
             {
-                Client = existingClient,
-                Trip = trip,
+                IdClient = existingClient.IdClient,
+                IdTrip = idTrip,
                 RegisteredAt = DateTime.Now,
-                PaymentDate = clientDTO.PaymentDate
+                PaymentDate = addClientToTripDTO.PaymentDate,
+                IdClientNavigation = existingClient,
+                IdTripNavigation = trip
             };
 
             _context.ClientTrips.Add(clientTrip);
             await _context.SaveChangesAsync();
 
             return Ok();
-        }*/
+        }
     }
 }
