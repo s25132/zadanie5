@@ -7,17 +7,13 @@ namespace TripApp.Context;
 
 public partial class S25132Context : DbContext
 {
-
-    private IConfiguration _configuration;
-    public S25132Context(IConfiguration configuration)
+    public S25132Context()
     {
-        _configuration = configuration;
     }
 
-    public S25132Context(DbContextOptions<S25132Context> options, IConfiguration configuration)
+    public S25132Context(DbContextOptions<S25132Context> options)
         : base(options)
     {
-        _configuration = configuration;
     }
 
     public virtual DbSet<Client> Clients { get; set; }
@@ -27,9 +23,6 @@ public partial class S25132Context : DbContext
     public virtual DbSet<Country> Countries { get; set; }
 
     public virtual DbSet<Trip> Trips { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:DefaultConnection"]);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

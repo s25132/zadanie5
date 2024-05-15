@@ -12,9 +12,9 @@ namespace TripApp.Controllers
 
         private S25132Context _context;
 
-        public TripsController(IConfiguration configuration)
+        public TripsController(S25132Context context)
         {
-            _context = new S25132Context(configuration);
+            _context = context;
         }
 
         [HttpGet]
