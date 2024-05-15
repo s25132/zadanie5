@@ -12,7 +12,7 @@ namespace TripApp.Controllers
 
         public ClientsController(S25132Context context)
         {
-            _context = context; ;
+            _context = context;
         }
 
         [HttpDelete("{id}")]

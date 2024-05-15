@@ -25,7 +25,6 @@ namespace TripApp.Controllers
             .Select(t => new TripDTO
             {
                 Name = t.Name,
-
                 Description = t.Description,
                 DateFrom = t.DateFrom,
                 DateTo = t.DateTo,
@@ -65,7 +64,7 @@ namespace TripApp.Controllers
                     // nowy klient nie ma jeszcze zadnych wycieczek i nie wiemy czy bêdzie mia³
                 };
 
-                 _context.Clients.Add(existingClient);
+                _context.Clients.Add(existingClient);
             }
 
 
