@@ -27,3 +27,8 @@ VALUES
     (1, 1),
     (1, 2),
     (3, 3);
+
+
+INSERT INTO trip.Client (IdClient, FirstName, LastName, Email, Telephone, Pesel)
+VALUES
+    (4, 'John1', 'Doe1', 'john.doe@example.com', '+123456789', '12345678901');

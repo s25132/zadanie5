@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TripApp.Context;
 
 namespace TripApp.Controllers
@@ -17,7 +18,8 @@ namespace TripApp.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteClient(int id)
         {
-            var client = await _context.Clients.FindAsync(id);
+            var client = await _context.Clients.Include(p => p.ClientTrips).FirstOrDefaultAsync(c => c.IdClient == id);
+
             if (client == null)
             {
                 return NotFound();
