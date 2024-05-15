@@ -12,18 +12,17 @@ namespace TripApp.Controllers
     public class TripsController : ControllerBase
     {
 
-        private IConfiguration _configuration;
+        private S25132Context _context;
 
         public TripsController(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _context = new S25132Context(configuration);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTrips()
         {
-            var dbContext = new S25132Context(_configuration);
-            var result = await dbContext.Trips
+            var result = await _context.Trips
                 .OrderByDescending(t => t.DateFrom)
             .Select(t => new TripDTO
             {
@@ -46,5 +45,43 @@ namespace TripApp.Controllers
             return Ok(result);
         }
 
+/*        [HttpPost("{idTrip}/clients")]
+        public async Task<ActionResult> AddClientToTrip(int idTrip, ClientDTO clientDTO)
+        {
+            var trip = await _context.Trips.FindAsync(idTrip);
+            if (trip == null)
+            {
+                return NotFound("Trip not found.");
+            }
+
+            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == clientDTO.Pesel);
+            if (existingClient == null)
+            {
+                existingClient = new Client
+                {
+                    Name = clientDTO.Name,
+                    Pesel = clientDTO.Pesel
+                };
+                _context.Clients.Add(existingClient);
+            }
+
+            if (trip.ClientTrips.Any(ct => ct.ClientId == existingClient.Id))
+            {
+                return BadRequest("Client is already assigned to this trip.");
+            }
+
+            var clientTrip = new ClientTrip
+            {
+                Client = existingClient,
+                Trip = trip,
+                RegisteredAt = DateTime.Now,
+                PaymentDate = clientDTO.PaymentDate
+            };
+
+            _context.ClientTrips.Add(clientTrip);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }*/
     }
 }
