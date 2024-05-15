@@ -18,7 +18,7 @@ namespace TripApp.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteClient(int id)
         {
-            var client = await _context.Clients.Include(p => p.ClientTrips).FirstOrDefaultAsync(c => c.IdClient == id);
+            var client = await _context.Clients.Include(p => p.ClientTrips).FirstAsync(c => c.IdClient == id);
 
             if (client == null)
             {

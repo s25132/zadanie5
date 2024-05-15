@@ -46,22 +46,26 @@ namespace TripApp.Controllers
         [HttpPost("{idTrip}/clients")]
         public async Task<ActionResult> AddClientToTrip(int idTrip, AddClientToTripDTO addClientToTripDTO)
         {
-            var trip = await _context.Trips.FindAsync(idTrip);
+            var trip = await _context.Trips.Include(p => p.ClientTrips).FirstAsync(c => c.IdTrip == idTrip);
             if (trip == null)
             {
                 return NotFound("Trip not found.");
             }
 
-            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == addClientToTripDTO.Pesel);
+            var existingClient = await _context.Clients.FirstAsync(c => c.Pesel == addClientToTripDTO.Pesel);
             if (existingClient == null)
             {
                 existingClient = new Client
                 {
                     FirstName = addClientToTripDTO.FirstName,
+                    LastName = addClientToTripDTO.LastName,
+                    Email = addClientToTripDTO.Email,
+                    Telephone = addClientToTripDTO.Email,
                     Pesel = addClientToTripDTO.Pesel
-                    //...
+                    // nowy klient nie ma jeszcze zadnych wycieczek i nie wiemy czy bêdzie mia³
                 };
-                _context.Clients.Add(existingClient);
+
+                 _context.Clients.Add(existingClient);
             }
 
 
@@ -81,7 +85,12 @@ namespace TripApp.Controllers
             };
 
             _context.ClientTrips.Add(clientTrip);
+
+            existingClient.ClientTrips.Add(clientTrip);
+            _context.Clients.Update(existingClient);
+
             await _context.SaveChangesAsync();
+
 
             return Ok();
         }
