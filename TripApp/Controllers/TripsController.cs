@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;
 using TripApp.Context;
 using TripApp.Models;
 
@@ -21,7 +22,7 @@ namespace TripApp.Controllers
         public async Task<IActionResult> GetTrips()
         {
             var result = await _context.Trips
-                .OrderByDescending(t => t.DateFrom)
+            .OrderByDescending(t => t.DateFrom)
             .Select(t => new TripDTO
             {
                 Name = t.Name,
@@ -45,17 +46,26 @@ namespace TripApp.Controllers
         [HttpPost("{idTrip}/clients")]
         public async Task<ActionResult> AddClientToTrip(int idTrip, AddClientToTripDTO addClientToTripDTO)
         {
-            var trip = await _context.Trips.Include(p => p.ClientTrips).FirstAsync(c => c.IdTrip == idTrip);
+            var trip = await _context.Trips.Include(p => p.ClientTrips).FirstOrDefaultAsync(c => c.IdTrip == idTrip);
             if (trip == null)
             {
                 return NotFound("Trip not found.");
             }
 
-            var existingClient = await _context.Clients.FirstAsync(c => c.Pesel == addClientToTripDTO.Pesel);
+            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Pesel == addClientToTripDTO.Pesel);
             if (existingClient == null)
             {
+                var maxClient = _context.Clients.OrderByDescending(u => u.IdClient).FirstOrDefault();
+
+                int idClient = 0;
+                if (maxClient != null)
+                {
+                    idClient = maxClient.IdClient + 1;
+                }
+
                 existingClient = new Client
                 {
+                    IdClient = idClient,
                     FirstName = addClientToTripDTO.FirstName,
                     LastName = addClientToTripDTO.LastName,
                     Email = addClientToTripDTO.Email,
@@ -65,6 +75,7 @@ namespace TripApp.Controllers
                 };
 
                 _context.Clients.Add(existingClient);
+                await _context.SaveChangesAsync();
             }
 
 

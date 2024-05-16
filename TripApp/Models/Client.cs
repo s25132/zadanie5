@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace TripApp.Models;
+﻿namespace TripApp.Models;
 
 public partial class Client
 {
